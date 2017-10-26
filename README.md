@@ -1,3 +1,8 @@
+forked from https://github.com/oh-my-fish/theme-agnoster
+## customization
+make use of the left prompt
+This particular one needs kubectl installed (currently). TBD: test for the presense of kubectl
+
 ## agnoster
 
 A fish theme optimized for people who use:

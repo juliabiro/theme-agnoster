@@ -15,7 +15,7 @@
 
 
 
-set -g current_bg NONE
+set -g current_bg normal
 set segment_separator \uE0B0
 set right_segment_separator \uE0B0
 # ===========================
@@ -59,7 +59,7 @@ function prompt_segment -d "Function to draw a segment"
   else
     set fg normal
   end
-  if [ "$current_bg" != 'NONE' -a "$argv[1]" != "$current_bg" ]
+  if [ "$current_bg" != 'normal' -a "$argv[1]" != "$current_bg" ]
     set_color -b $bg
     set_color $current_bg
     echo -n "$segment_separator "
@@ -82,7 +82,7 @@ function prompt_finish -d "Close open segments"
     set_color $current_bg
     echo -n "$segment_separator "
   end
-  set -g current_bg NONE
+  set -g current_bg normal
 end
 
 
@@ -214,6 +214,12 @@ function prompt_status -d "the symbols for a non zero exit status, root and back
     end
 end
 
+function prompt_kubernetes
+  set context (kubectl config view -o template --template='{{ index . "current-context" }}'|cut -d"." -f1)
+  prompt_segment normal yellow "$AWS_PROFILE"
+  prompt_segment normal cyan "$context"
+end
+
 # ===========================
 # Apply theme
 # ===========================
@@ -224,8 +230,12 @@ function fish_prompt
   prompt_virtual_env
   prompt_user
   prompt_dir
-  type -q hg;  and prompt_hg
   type -q git; and prompt_git
-  type -q svn; and prompt_svn
   prompt_finish
+end
+
+function fish_right_prompt -d 'Prints right prompt'
+  set -l right_segment_separator \uE0B2
+  prompt_kubernetes
+  set_color normal
 end
