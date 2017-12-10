@@ -215,9 +215,19 @@ function prompt_status -d "the symbols for a non zero exit status, root and back
 end
 
 function prompt_kubernetes
-  set context (kubectl config view -o template --template='{{ index . "current-context" }}'|cut -d"." -f1)
+  set context (kubectl config view -o template --template='{{ index . "current-context" }}')
+  set context_name (echo $context|cut -d"." -f1)
+  switch  (echo $context|cut -d"." -f2)
+  case $PRODUCTION
+	set env_color ff00ff
+  case $STAGING
+	set env_color fff
+  case $PREVIEW
+    set env_color ff0
+  end
+
   prompt_segment normal yellow "$AWS_PROFILE"
-  prompt_segment normal cyan "$context"
+  prompt_segment normal $env_color "$context_name"
 end
 
 # ===========================
