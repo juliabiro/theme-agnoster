@@ -215,9 +215,26 @@ function prompt_status -d "the symbols for a non zero exit status, root and back
 end
 
 function prompt_kubernetes
-  set context (kubectl config view -o template --template='{{ index . "current-context" }}'|cut -d"." -f1)
-  prompt_segment normal yellow "$AWS_PROFILE"
-  prompt_segment normal cyan "$context"
+  set context (kubectl config view -o template --template='{{ index . "current-context" }}')
+  # if [ -n $context ] and [ $context !=  'minikube' ]
+  #     switch $context
+  #         case "production*"
+  #             set env_color ff00ff
+  #         case "*contentful.org"
+  #             set env_color ff00ff
+  #         case "staging*"
+  #             set env_color 0ff
+  #         case "*flinkly.com"
+  #             set env_color 0ff
+  #         case "preview*"
+  #             set env_color ff0
+  #         case "*quirely.com"
+  #             set env_color ff0
+  #         case '*'
+  #             set env_color 251C98
+  #     end
+  #   prompt_segment normal $env_color "$context"
+  # end
 end
 
 # ===========================
@@ -236,6 +253,8 @@ end
 
 function fish_right_prompt -d 'Prints right prompt'
   set -l right_segment_separator \uE0B2
+  prompt_segment normal white (date +%H:%M" ")
+  prompt_segment normal yellow "$AWS_PROFILE"
   prompt_kubernetes
   set_color normal
 end
