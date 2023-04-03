@@ -215,25 +215,23 @@ function prompt_status -d "the symbols for a non zero exit status, root and back
 end
 
 function prompt_kubernetes
-  #TODO replace with mapping imported form env var
-  set context (kubectl config view -o template --template='{{ index . "current-context" }}')
+  # if you have a bunch of configs that are workspace-sepcific and you don't want to commit to public code then just overwrite it in a local file with a function called `prompt_kubernetes_extension`
+  # TODO maybe allow this in all prompt segments?
+  if [ -n $FISH_PROMPT_EXTENSION ]
+    source $FISH_PROMPT_EXTENSION
+    prompt_kubernetes_extension
+  else
+    set context (kubectl config view -o template --template='{{ index . "current-context" }}')
     switch $context
         case "production*"
             set env_color ff00ff
-        case "*contentful.org"
-            set env_color ff00ff
         case "staging*"
             set env_color 0ff
-        case "*flinkly.com"
-            set env_color 0ff
-        case "preview*"
-            set env_color ff0
-        case "*quirely.com"
-            set env_color ff0
         case '*'
             set env_color 251C98
     end
-  prompt_segment normal $env_color "$context"
+    prompt_segment normal $env_color "$context"
+  end
 end
 
 # ===========================
