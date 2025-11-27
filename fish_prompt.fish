@@ -169,32 +169,32 @@ function prompt_git -d "Display the current git state"
 end
 
 
-function prompt_svn -d "Display the current svn state"
-  set -l ref
-  if command svn ls . >/dev/null 2>&1
-    set branch (svn_get_branch)
-    set branch_symbol \uE0A0
-    set revision (svn_get_revision)
-    prompt_segment green black "$branch_symbol $branch:$revision"
-  end
-end
+# function prompt_svn -d "Display the current svn state"
+#  set -l ref
+#  if command svn ls . >/dev/null 2>&1
+#    set branch (svn_get_branch)
+#    set branch_symbol \uE0A0
+#    set revision (svn_get_revision)
+#    prompt_segment green black "$branch_symbol $branch:$revision"
+#  end
+#end
 
-function svn_get_branch -d "get the current branch name"
-  svn info 2> /dev/null | awk -F/ \
-      '/^URL:/ { \
-        for (i=0; i<=NF; i++) { \
-          if ($i == "branches" || $i == "tags" ) { \
-            print $(i+1); \
-            break;\
-          }; \
-          if ($i == "trunk") { print $i; break; } \
-        } \
-      }'
-end
+#function svn_get_branch -d "get the current branch name"
+#  svn info 2> /dev/null | awk -F/ \
+#      '/^URL:/ { \
+#        for (i=0; i<=NF; i++) { \
+#          if ($i == "branches" || $i == "tags" ) { \
+#            print $(i+1); \
+#            break;\
+#          }; \
+#          if ($i == "trunk") { print $i; break; } \
+#        } \
+#      }'
+#end
 
-function svn_get_revision -d "get the current revision number"
-  svn info 2> /dev/null | sed -n 's/Revision:\ //p'
-end
+#function svn_get_revision -d "get the current revision number"
+#  svn info 2> /dev/null | sed -n 's/Revision:\ //p'
+#end
 
 
 function prompt_status -d "the symbols for a non zero exit status, root and background jobs"
@@ -217,10 +217,11 @@ end
 function prompt_kubernetes
   # if you have a bunch of configs that are workspace-sepcific and you don't want to commit to public code then just overwrite it in a local file with a function called `prompt_kubernetes_extension`
   # TODO maybe allow this in all prompt segments?
-  if [ -n $FISH_PROMPT_EXTENSION ]
-    source $FISH_PROMPT_EXTENSION
-    prompt_kubernetes_extension
-  else
+  # remove this for now because it is broken and there is no use in fixing it until I want to use it
+  #if [ -n $FISH_PROMPT_EXTENSION ]
+  #  source $FISH_PROMPT_EXTENSION
+  #  prompt_kubernetes_extension
+  #else
     set context (kubectl config view -o template --template='{{ index . "current-context" }}')
     switch $context
         case "production*"
@@ -229,7 +230,7 @@ function prompt_kubernetes
             set env_color 0ff
         case '*'
             set env_color 251C98
-    end
+   # end
     prompt_segment normal $env_color "$context"
   end
 end
