@@ -127,25 +127,30 @@ function prompt_dir -d "Display the current directory"
   prompt_segment blue black (prompt_pwd)
 end
 
-
-function prompt_hg -d "Display mercurial state"
-  set -l branch
-  set -l state
-  if command hg id >/dev/null 2>&1
-    if command hg prompt >/dev/null 2>&1
-      set branch (command hg prompt "{branch}")
-      set state (command hg prompt "{status}")
-      set branch_symbol \uE0A0
-      if [ "$state" = "!" ]
-        prompt_segment red white "$branch_symbol $branch ±"
-      else if [ "$state" = "?" ]
-          prompt_segment yellow black "$branch_symbol $branch ±"
-        else
-          prompt_segment green black "$branch_symbol $branch"
-      end
-    end
+function prompt_prod -d "Display different color for prod environment"
+  if string match "*prod*" $PWD
+    prompt_segment red black "PROD"
   end
 end
+
+# function prompt_hg -d "Display mercurial state"
+#   set -l branch
+#   set -l state
+#   if command hg id >/dev/null 2>&1
+#     if command hg prompt >/dev/null 2>&1
+#       set branch (command hg prompt "{branch}")
+#       set state (command hg prompt "{status}")
+#       set branch_symbol \uE0A0
+#       if [ "$state" = "!" ]
+#         prompt_segment red white "$branch_symbol $branch ±"
+#       else if [ "$state" = "?" ]
+#           prompt_segment yellow black "$branch_symbol $branch ±"
+#         else
+#           prompt_segment green black "$branch_symbol $branch"
+#       end
+#     end
+#   end
+# end
 
 
 function prompt_git -d "Display the current git state"
@@ -224,16 +229,16 @@ function prompt_kubernetes
   #else
     set context (kubectl config view -o template --template='{{ index . "current-context" }}')
     switch $context
-        case "production*"
-            set env_color ff00ff
-        case "staging*"
-            set env_color 0ff
+        case "*prod*"
+            set env_color ff0000
+        case "*staging*"
+            set env_color 036ffc
         case '*'
             set env_color 251C98
-   # end
+    end
     prompt_segment normal $env_color "$context"
   end
-end
+
 
 # ===========================
 # Apply theme
@@ -245,6 +250,7 @@ function fish_prompt
   prompt_virtual_env
   prompt_user
   prompt_dir
+  prompt_prod
   type -q git; and prompt_git
   prompt_finish
 end
@@ -252,7 +258,7 @@ end
 function fish_right_prompt -d 'Prints right prompt'
   set -l right_segment_separator \uE0B2
   prompt_segment normal white (date +%H:%M" ")
-  prompt_segment normal yellow "$AWS_PROFILE"
+  #prompt_segment normal yellow "$AWS_PROFILE"
   prompt_kubernetes
   set_color normal
 end
